@@ -30,7 +30,7 @@ app.get('/api/persons', (request, response) => {
 
 app.get('/info', (request, response) => {
     const time = new Date().toUTCString()
-    response.send(`<h2>Phonebook has ${persons.length} contact</h2> <h2>${time}</h2>`)
+    response.send(`<h2>Phonebook has ${persons.length} contact</h2> <h3>${time}</h3>`)
 })
 
 const PORT = 3001
