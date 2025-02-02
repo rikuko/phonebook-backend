@@ -28,6 +28,10 @@ app.get('/api/persons', (request, response) => {
     response.json(persons)
 })
 
+app.get('/info', (request, response) => {
+    const time = new Date().toUTCString()
+    response.send(`<h2>Phonebook has ${persons.length} contact</h2> <h2>${time}</h2>`)
+})
 
 const PORT = 3001
 app.listen(PORT)
