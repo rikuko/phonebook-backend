@@ -1,6 +1,12 @@
 const express = require('express')
 const app = express()
 
+app.use(express.json())
+
+const PORT = 3001
+app.listen(PORT)
+console.log(`Server running on port ${PORT}`)
+
 let persons = [
     {
         "name": "Arto Hellas",
@@ -51,9 +57,25 @@ app.delete('/api/persons/:id', (request, response) => {
 
 })
 
-const PORT = 3001
-app.listen(PORT)
-console.log(`Server running on port ${PORT}`)
+const getId = () => {
+    return (Math.floor(Math.random() * 9999) + 1).toString()
+}
+
+app.post('/api/persons', (request, response) => {
+    const body = request.body
+
+    const newContact = {
+        name: body.name,
+        number: body.number,
+        id: getId()
+    }
+    persons = persons.concat(newContact)
+    console.log('Persons: ', persons)
+    response.json(newContact)
+})
+
+
+
 
 
 
