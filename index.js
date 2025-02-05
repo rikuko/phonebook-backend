@@ -1,7 +1,10 @@
 const express = require('express')
+const morgan = require('morgan')
+
 const app = express()
 
-app.use(express.json())
+app.use(express.json()) //json-parseri
+app.use(morgan('tiny')) //morgan loggaa konsoliin pyyntöjen tiedot
 
 const PORT = 3001
 app.listen(PORT)
