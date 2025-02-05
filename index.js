@@ -63,19 +63,26 @@ const getId = () => {
 
 app.post('/api/persons', (request, response) => {
     const body = request.body
+    const personsNames = persons.map(person => person.name)
+    console.log('Persons names: ', personsNames)
 
-    const newContact = {
-        name: body.name,
-        number: body.number,
-        id: getId()
+    if (!body.name || !body.number) {
+        return response.status(400).json({
+            error: 'Name and/or number missing'
+        })
     }
-    persons = persons.concat(newContact)
-    console.log('Persons: ', persons)
-    response.json(newContact)
+    if (personsNames.includes(body.name)) {
+        return response.status(400).json({
+            error: 'Name all ready exist in contacts'
+        })
+    } else {
+        const newContact = {
+            name: body.name,
+            number: body.number,
+            id: getId()
+        }
+        persons = persons.concat(newContact)
+        console.log('Persons: ', persons)
+        response.json(newContact)
+    }
 })
-
-
-
-
-
-
