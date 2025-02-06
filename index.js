@@ -3,8 +3,24 @@ const morgan = require('morgan')
 
 const app = express()
 
-app.use(express.json()) //json-parseri
-app.use(morgan('tiny')) //morgan loggaa konsoliin pyyntöjen tiedot
+//json-parseri
+app.use(express.json())
+
+// If http-method is anything else than POST, morgan logging with morgan('tiny') configuration
+app.use((req, res, next) => {
+    if (req.method !== 'POST') {
+        return morgan('tiny')(req, res, next)
+    }
+    next()
+})
+
+/*** Middleware for logging POST-requests, start ***/
+morgan.token('body', (req) => {
+    return JSON.stringify(req.body)
+})
+
+const postLogger = morgan(':method :url :status :response-time :body')
+/*** Middleware for logging POST-requests, end ***/
 
 const PORT = 3001
 app.listen(PORT)
@@ -33,15 +49,18 @@ let persons = [
     }
 ]
 
+//Get all contacts
 app.get('/api/persons', (request, response) => {
     response.json(persons)
 })
 
+//Get phone book info
 app.get('/info', (request, response) => {
     const time = new Date().toUTCString()
-    response.send(`<h2>Phonebook has ${persons.length} contact</h2> <h3>${time}</h3>`)
+    response.send(`<h2>Phone book has ${persons.length} contact</h2> <h3>${time}</h3>`)
 })
 
+//Get one contact
 app.get('/api/persons/:id', (request, response) => {
     const id = request.params.id
     const person = persons.find(person => person.id === id)
@@ -53,6 +72,7 @@ app.get('/api/persons/:id', (request, response) => {
     }
 })
 
+//Delete contact
 app.delete('/api/persons/:id', (request, response) => {
     const id = request.params.id
     persons = persons.filter(person => person.id !== id)
@@ -60,11 +80,13 @@ app.delete('/api/persons/:id', (request, response) => {
 
 })
 
+//Generate random id-number for new contact
 const getId = () => {
     return (Math.floor(Math.random() * 9999) + 1).toString()
 }
 
-app.post('/api/persons', (request, response) => {
+// Add new contact
+app.post('/api/persons', postLogger, (request, response) => {
     const body = request.body
     const personsNames = persons.map(person => person.name)
     console.log('Persons names: ', personsNames)
@@ -89,3 +111,4 @@ app.post('/api/persons', (request, response) => {
         response.json(newContact)
     }
 })
+
