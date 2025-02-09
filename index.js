@@ -1,10 +1,11 @@
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
 
 const app = express()
 
-//json-parseri
-app.use(express.json())
+app.use(express.json()) //json-parseri
+app.use(cors())
 
 // If http-method is anything else than POST, morgan logging with morgan('tiny') configuration
 app.use((req, res, next) => {
@@ -21,10 +22,6 @@ morgan.token('body', (req) => {
 
 const postLogger = morgan(':method :url :status :response-time :body')
 /*** Middleware for logging POST-requests, end ***/
-
-const PORT = 3001
-app.listen(PORT)
-console.log(`Server running on port ${PORT}`)
 
 let persons = [
     {
@@ -111,4 +108,8 @@ app.post('/api/persons', postLogger, (request, response) => {
         response.json(newContact)
     }
 })
+
+const PORT = 3001
+app.listen(PORT)
+console.log(`Server running on port ${PORT}`)
 
