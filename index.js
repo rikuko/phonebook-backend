@@ -6,6 +6,7 @@ const app = express()
 
 app.use(express.json()) //json-parseri
 app.use(cors())
+app.use(express.static('dist'))
 
 // If http-method is anything else than POST, morgan logging with morgan('tiny') configuration
 app.use((req, res, next) => {
