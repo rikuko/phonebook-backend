@@ -1,12 +1,15 @@
+require('dotenv').config()
 const express = require('express')
-const morgan = require('morgan')
-const cors = require('cors')
+const Contact = require('./models/contact')
 
 const app = express()
 
+const morgan = require('morgan')
+const cors = require('cors')
+
+app.use(express.static('dist'))
 app.use(express.json()) //json-parseri
 app.use(cors())
-app.use(express.static('dist'))
 
 // If http-method is anything else than POST, morgan logging with morgan('tiny') configuration
 app.use((req, res, next) => {
@@ -49,7 +52,9 @@ let persons = [
 
 //Get all contacts
 app.get('/api/persons', (request, response) => {
-    response.json(persons)
+    Contact.find({}).then(contacts => {
+        response.json(contacts)
+    })
 })
 
 //Get phone book info
@@ -60,14 +65,14 @@ app.get('/info', (request, response) => {
 
 //Get one contact
 app.get('/api/persons/:id', (request, response) => {
-    const id = request.params.id
-    const person = persons.find(person => person.id === id)
+    Contact.findById(request.params.id).then(person => {
 
-    if (!person) {
-        response.status(404).end()
-    } else {
-        response.json(person)
-    }
+        if (!person) {
+            response.status(404).end()
+        } else {
+            response.json(person)
+        }
+    })
 })
 
 //Delete contact
@@ -104,15 +109,13 @@ app.post('/api/persons', postLogger, (request, response) => {
             number: body.number,
             id: getId()
         }
-        persons = persons.concat(newContact)
-        console.log('Persons: ', persons)
-        response.json(newContact)
+        newContact.save().then(savedContact => {
+            response.json(savedContact)
+        })
     }
 })
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
-
-
