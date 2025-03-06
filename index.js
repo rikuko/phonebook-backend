@@ -1,8 +1,8 @@
 require('dotenv').config()
 const express = require('express')
-const app = express()
-
 const Contact = require('./models/contact')
+
+const app = express()
 
 let persons = [
     {
@@ -106,11 +106,11 @@ app.post('/api/persons', postLogger, (request, response) => {
             error: 'Name all ready exist in contacts'
         })
     } else {
-        const newContact = {
+        const newContact = new Contact({
             name: body.name,
             number: body.number,
             id: getId()
-        }
+        })
         newContact.save().then(savedContact => {
             response.json(savedContact)
         })
