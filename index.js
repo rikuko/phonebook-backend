@@ -67,22 +67,31 @@ app.get('/info', (request, response) => {
 
 //Get one contact
 app.get('/api/persons/:id', (request, response) => {
-    Contact.findById(request.params.id).then(person => {
-
-        if (!person) {
-            response.status(404).end()
-        } else {
-            response.json(person)
-        }
-    })
+    Contact.findById(request.params.id)
+        .then(person => {
+            if (person) {
+                response.json(person)
+            } else {
+                response.status(404).end()
+            }
+        })
+        .catch(error => {
+            console.log(error)
+            response.status(400).send({ error: 'Invalid id format' })
+        })
 })
 
 //TODO 
 //Delete contact
 app.delete('/api/persons/:id', (request, response) => {
-    const id = request.params.id
-    persons = persons.filter(person => person.id !== id)
-    response.status(204).end()
+    Contact.findByIdAndDelete(request.params.id)
+        .then(result => {
+            response.status(204).end()
+        })
+
+    /*  const id = request.params.id
+     persons = persons.filter(person => person.id !== id)
+     response.status(204).end() */
 
 })
 
