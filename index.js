@@ -50,10 +50,9 @@ morgan.token('body', (req) => {
 const postLogger = morgan(':method :url :status :response-time :body')
 /*** Middleware for logging POST-requests, end ***/
 
-
-
 //Get all contacts
 app.get('/api/persons', (request, response) => {
+    console.log('Response status: ', response.method, response.statusCode)
     Contact.find({}).then(contacts => {
         response.json(contacts)
     })
@@ -61,13 +60,15 @@ app.get('/api/persons', (request, response) => {
 
 //Get phone book info
 app.get('/info', (request, response) => {
+    console.log('Response status: ', response.method, response.statusCode)
     const time = new Date().toUTCString()
     response.send(`<h2>Phone book has ${persons.length} contact</h2> <h3>${time}</h3>`)
 })
 
 //Get one contact
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
     Contact.findById(request.params.id)
+    console.log('ID to find ', request.params.id)
         .then(person => {
             if (person) {
                 response.json(person)
@@ -75,18 +76,18 @@ app.get('/api/persons/:id', (request, response) => {
                 response.status(404).end()
             }
         })
-        .catch(error => {
-            console.log(error)
-            response.status(400).send({ error: 'Invalid id format' })
-        })
+        .catch(error => next(error))
+    console.log(error.message)
 })
 
 //Delete contact
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
     Contact.findByIdAndDelete(request.params.id)
-        .then(result => {
+        .then(response => {
             response.status(204).end()
         })
+        .catch(error => next(error))
+    console.log(error.message)
 })
 
 //Generate random id-number for new contact
@@ -120,6 +121,16 @@ app.post('/api/persons', postLogger, (request, response) => {
         })
     }
 })
+
+const errorHandler = (error, req, res, next) => {
+    console.log(error.message)
+    if (error.name === 'CastError') {
+        return res.status(400).send({ error: 'Invalid id format' })
+    }
+    next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
