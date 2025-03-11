@@ -81,13 +81,12 @@ app.get('/api/persons/:id', (request, response, next) => {
 })
 
 //Delete contact
-app.delete('/api/persons/:id', (request, response, next) => {
-    Contact.findByIdAndDelete(request.params.id)
-        .then(response => {
+app.delete('/api/notes/:id', (request, response, next) => {
+    Note.findByIdAndDelete(request.params.id)
+        .then(result => {
             response.status(204).end()
         })
         .catch(error => next(error))
-    console.log(error.message)
 })
 
 //Generate random id-number for new contact
