@@ -82,8 +82,9 @@ app.get('/api/persons/:id', (request, response, next) => {
 
 //Delete contact
 app.delete('/api/notes/:id', (request, response, next) => {
-    Note.findByIdAndDelete(request.params.id)
-        .then(result => {
+    const id = request.params.id
+    Contact.findByIdAndRemove(id)
+        .then(() => {
             response.status(204).end()
         })
         .catch(error => next(error))
