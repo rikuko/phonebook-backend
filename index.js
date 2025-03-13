@@ -122,14 +122,14 @@ app.post('/api/persons', postLogger, (request, response) => {
     }
 })
 
+//Update phone number
 app.put('/api/persons/:id', (request, response, next) => {
     const body = request.body
     const contact = {
         name: body.name,
         number: body.number
     }
-    Contact
-        .findByIdAndUpdate(request.params.id, contact)
+    Contact.findByIdAndUpdate(request.params.id, contact)
         .then(updatedContact => {
             response.json(updatedContact)
         })
