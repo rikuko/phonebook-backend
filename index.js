@@ -122,6 +122,21 @@ app.post('/api/persons', postLogger, (request, response) => {
     }
 })
 
+app.put('/api/persons/:id', (request, response, next) => {
+    const body = request.body
+    const contact = {
+        name: body.name,
+        number: body.number
+    }
+    Contact
+        .findByIdAndUpdate(request.params.id, contact)
+        .then(updatedContact => {
+            response.json(updatedContact)
+        })
+        .catch(error => next(error))
+}
+)
+
 const errorHandler = (error, req, res, next) => {
     console.log(error.message)
     if (error.name === 'CastError') {
