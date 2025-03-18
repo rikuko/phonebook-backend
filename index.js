@@ -4,6 +4,29 @@ const Contact = require('./models/contact')
 
 const app = express()
 
+let persons = [
+    {
+        "name": "Arto Hellas",
+        "number": "040-123456",
+        "id": "1"
+    },
+    {
+        "name": "Ada Lovelace",
+        "number": "39-44-5323523",
+        "id": "2"
+    },
+    {
+        "name": "Dan Abramov",
+        "number": "12-43-234345",
+        "id": "3"
+    },
+    {
+        "name": "Mary Poppendieck",
+        "number": "39-23-6423122",
+        "id": "4"
+    }
+]
+
 const morgan = require('morgan')
 const cors = require('cors')
 
@@ -37,25 +60,27 @@ app.get('/api/persons', (request, response) => {
 
 //Get phone book info
 app.get('/info', (request, response) => {
-    console.log('Response status: ', response.method, response.statusCode)
+    console.log('Response status: ', response.statusCode)
     const time = new Date().toUTCString()
-    response.send(`<h2>Phone book has ${persons.length} contact</h2> <h3>${time}</h3>`)
+    Contact.find({}).then(contacts => {
+        response.send(`<h2>Phone book has ${contacts.length} contact</h2> <h3>${time}</h3>`)
+    })
 })
 
 //Get one contact
 app.get('/api/persons/:id', (request, response, next) => {
-    Contact.findById(request.params.id)
     console.log('ID to find ', request.params.id)
-        .then(person => {
-            if (person) {
-                response.json(person)
+    Contact.findById(request.params.id)
+        .then(contact => {
+            if (contact) {
+                response.json(contact)
             } else {
                 response.status(404).end()
             }
         })
         .catch(error => next(error))
-    console.log(error.message)
 })
+
 
 //Delete contact
 app.delete('/api/persons/:id', (request, response, next) => {
