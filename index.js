@@ -28,11 +28,9 @@ let persons = [
 ]
 
 const morgan = require('morgan')
-const cors = require('cors')
 
 app.use(express.static('dist'))
 app.use(express.json()) //json-parseri
-app.use(cors())
 
 // If http-method is anything else than POST, morgan logging with morgan('tiny') configuration
 app.use((req, res, next) => {
@@ -98,7 +96,7 @@ const getId = () => {
 }
 
 // Add new contact
-app.post('/api/persons', postLogger, (request, response) => {
+app.post('/api/persons', postLogger, (request, response, next) => {
     const body = request.body
     const personsNames = persons.map(person => person.name)
     console.log('Persons names: ', personsNames)
@@ -121,6 +119,7 @@ app.post('/api/persons', postLogger, (request, response) => {
         newContact.save().then(savedContact => {
             response.json(savedContact)
         })
+            .catch(error => next(error))
     }
 })
 
@@ -143,6 +142,9 @@ const errorHandler = (error, req, res, next) => {
     console.log(error.message)
     if (error.name === 'CastError') {
         return res.status(400).send({ error: 'Invalid id format' })
+    }
+    if (error.name === 'ValidationError') {
+        return res.status(400).json({ error: error.message })
     }
     next(error)
 }
