@@ -40,13 +40,13 @@ app.use((req, res, next) => {
     next()
 })
 
-/*** Middleware for logging POST-requests, start ***/
+/*** START Middleware for logging POST-requests ***/
 morgan.token('body', (req) => {
     return JSON.stringify(req.body)
 })
 
 const postLogger = morgan(':method :url :status :response-time :body')
-/*** Middleware for logging POST-requests, end ***/
+/*** Middleware for logging POST-requests END ***/
 
 //Get all contacts
 app.get('/api/persons', (request, response) => {
