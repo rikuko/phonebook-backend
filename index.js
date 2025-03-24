@@ -79,7 +79,6 @@ app.get('/api/persons/:id', (request, response, next) => {
         .catch(error => next(error))
 })
 
-
 //Delete contact
 app.delete('/api/persons/:id', (request, response, next) => {
     const id = request.params.id
